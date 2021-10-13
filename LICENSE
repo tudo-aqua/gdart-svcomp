@@ -1,0 +1,111 @@
+As GDart is an ensemble tool, the three different components have different licenses.
+JConstraints included in the DSE engine and licensed by the Apache 2.0 license.
+DSE is licensed under Apache 2.0 as well.
+SPouT is licensed and distributed under GPL 2.0 as Espresso is licensed under GPL 2.0.
+
+Each subfolder contains the corresponding license file.
+
+CVC4 is distributed as part of JConstraints under the modified BSD license:
+--------------------------------------------------------------------------------
+CVC4 is copyright (C) 2009-2021 by its authors and contributors (see the file
+AUTHORS) and their institutional affiliations.  All rights reserved.
+
+The source code of cvc5 is open and available to students, researchers,
+software companies, and everyone else to study, to modify, and to redistribute
+original or modified versions; distribution is under the terms of the modified
+BSD license (reproduced below).  Please note that cvc5 can be configured
+(however, by default it is not) to link against some GPLed libraries, and
+therefore the use of these builds may be restricted in non-GPL-compatible
+projects.  See below for a discussion of CLN and GLPK (the two GPLed optional
+library dependences for cvc5), and how to ensure you have a build that doesn't
+link against GPLed libraries.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
+
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+
+3. Neither the name of the copyright holder nor the names of its
+   contributors may be used to endorse or promote products derived from
+   this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT OWNERS AND CONTRIBUTORS
+''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+OWNERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+-------------------------------------------------------------------------------
+
+Z3 is distributed as part of JConstraints under the MIT license
+-------------------------------------------------------------------------------
+Z3
+Copyright (c) Microsoft Corporation
+All rights reserved.
+MIT License
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED *AS IS*, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+--------------------------------------------------------------------------------
+
+jSMTLIB is distributed as part of JConstraints under the EPL-1.0 license
+--------------------------------------------------------------------------------
+The software with which this license file is associated is
+    Copyright (c) 2014 by David R. Cok.
+
+End-User License Agreement
+
+This software is licensed under the terms of the Eclipse Public License
+(www.opensource.org/licenses/EPL-1.0)
+
+SOFTWARE DISCLAIMER OF WARRANTY/LIMITATION ON LIABILITY & REMEDIES.
+Author does not warrant that the SOFTWARE will meet your requirements,
+that operation of the SOFTWARE will be uninterrupted or error-free, or
+that all SOFTWARE errors will be corrected.
+
+THERE IS NO WARRANTY FOR THE SOFTWARE, TO THE EXTENT PERMITTED BY APPLICABLE
+LAW.  EXCEPT WHEN OTHERWISE STATED IN WRITING, THE AUTHOR AND/OR OTHER
+PARTIES PROVIDE THE PROGRAM “AS IS AND WITH ALL FAULTS,” WITHOUT WARRANTY
+OF ANY KIND, EITHER EXPRESS, IMPLIED OR STATUTORY (IF ANY), INCLUDING, BUT
+NOT LIMITED TO, ANY IMPLIED WARRANTIES, DUTIES OR CONDITIONS OF
+MERCHANTABILITY, OF FITNESS FOR A PARTICULAR PURPOSE, OF RELIABILITY OR
+AVAILABILITY, OF ACCURACY OR COMPLETENESS OF RESPONSES, OF RESULTS, OF
+WORKMANLIKE EFFORT, OF LACK OF VIRUSES, AND OF LACK OF NEGLIGENCE, ALL
+WITH REGARD TO THE SOFTWARE, AND THE PROVISION OF OR FAILURE TO PROVIDE
+SUPPORT OR OTHER SERVICES, INFORMATION, SOFTWARE, AND RELATED CONTENT
+THROUGH THE SOFTWARE OR OTHERWISE ARISING OUT OF THE USE OF THE SOFTWARE.
+THERE IS NO WARRANTY OR CONDITION OF TITLE, QUIET ENJOYMENT, QUIET
+POSSESSION, CORRESPONDENCE TO DESCRIPTION OR NON-INFRINGEMENT WITH REGARD
+TO THE SOFTWARE.
+
+IN NO EVENT, UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING,
+WILL AUTHOR AND/OR ANY OTHER PARTY THAT PROVIDES THE SOFTWARE AS PERMITTED
+HEREIN, BE LIABLE TO YOU FOR ANY DAMAGES, INCLUDING ANY GENERAL, SPECIAL,
+CONSEQUENTIAL, INDIRECT OR SIMILAR DAMAGES, INCLUDING, BUT NOT LIMITED TO,
+ANY ECONOMIC LOSS OR LOST DATA ARISING OUT OF THE USE OR INABILITY TO USE
+THE SOFTWARE OR ANY DATA SUPPLIED THEREWITH OR ARISING FROM ANY BREACH OF
+THIS AGREEMENT OR ANY OBLIGATIONS UNDER THIS AGREEMENT OR THE LICENSE
+GRANTED, EVEN IF AUTHOR OR ANYONE ELSE HAS BEEN ADVISED OF THE POSSIBILITY
+OF SUCH DAMAGES, EVEN IN THE EVENT OF FAULT, TORT (INCLUDING NEGLIGENCE),
+MISREPRESENTATION, OR STRICT LIABILITY, OR FOR ANY CLAIM BY ANY OTHER PARTY.
+
+If the disclaimer of warranty and limitation of liability provided herein
+cannot be given local legal effect according to their terms, reviewing
+courts shall apply the controlling law that most closely approximates
+an absolute waiver of all civil liability in connection with the SOFTWARE.
+--------------------------------------------------------------------------------
