@@ -7,3 +7,6 @@ popd;
 pushd SPouT/espresso;
   mx --env native-ce build;
 popd;
+pushd verifier-stub;
+ mvn package;
+popd;
