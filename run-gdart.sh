@@ -13,7 +13,7 @@
 # specific language governing permissions and limitations under the License.
 
 OFFSET=$(dirname $BASH_SOURCE[0])
-SOLVER_FLAGS="-Ddse.dp=multi -Ddse.bounds=true -Ddse.bounds.iter=6 -Ddse.bounds.step=6 -Ddse.terminate.on=assertion -Ddse.eplore=BFS"
+SOLVER_FLAGS="-Ddse.witness=true -Ddse.dp=multi -Ddse.bounds=true -Ddse.bounds.iter=6 -Ddse.bounds.step=6 -Ddse.terminate.on=assertion -Ddse.eplore=BFS -Ddse.b64encode=true -Djconstraints.multi=disableUnsatCoreChecking=true"
 if [[ -z "$OFFSET" ]]; then
     OFFSET="."
 fi
@@ -30,7 +30,7 @@ fi
 path=`pwd`
 
 shift
-classpath=$OFFSET/verifier-stub/target/verifier-stub-1.0.jar
+classpath=$OFFSET
 
 mainclass=""
 for folder in $@; do
@@ -60,11 +60,11 @@ else
     JAVAC=$OFFSET/SPouT/sdk/mxbuild/linux-amd64/GRAALVM_ESPRESSO_NATIVE_CE_JAVA11/graalvm-espresso-native-ce-java11-21.2.0/bin/javac
     JAVA=$OFFSET/SPouT/sdk/mxbuild/linux-amd64/GRAALVM_ESPRESSO_NATIVE_CE_JAVA11/graalvm-espresso-native-ce-java11-21.2.0/bin/java
 fi
-
+echo "compiling: $JAVAC -cp $classpath $mainclass"
 $JAVAC -cp $classpath $mainclass
 
 echo "invoke DSE: $JAVA -cp $OFFSET/dse/target/dse-0.0.1-SNAPSHOT-jar-with-dependencies.jar tools.aqua.dse.DSELauncher $SOLVER_FLAGS -Ddse.executor=$OFFSET/executor.sh -Ddse.executor.args=\"-cp $classpath Main\""
-$JAVA -cp $OFFSET/dse/target/dse-0.0.1-SNAPSHOT-jar-with-dependencies.jar tools.aqua.dse.DSELauncher $SOLVER_FLAGS -Ddse.executor=$OFFSET/executor.sh -Ddse.executor.args="-cp $classpath Main" > _gdart.log 2> _gdart.err
+$JAVA -cp $OFFSET/dse/target/dse-0.0.1-SNAPSHOT-jar-with-dependencies.jar tools.aqua.dse.DSELauncher $SOLVER_FLAGS -Ddse.executor=$OFFSET/executor.sh -Ddse.executor.args="-cp $classpath Main" -Ddse.sources=$classpath > _gdart.log 2> _gdart.err
 
 for folder in $@; do
     classpath="$classpath:$folder"
@@ -83,14 +83,30 @@ done
 sed 's/[^[:print:]]//' _gdart.log > _gdart.processed
 mv _gdart.processed _gdart.log
 
+echo "# # # # # # #"
+
+cat _gdart.log
+
+echo "# # # # # # #"
+
+cat _gdart.err
+
+echo "# # # # # # #"
+
+cat witness.graphml
+
+echo "# # # # # # #"
+
 complete=`cat _gdart.log | grep -a "END OF OUTPUT"`
 errors=`cat _gdart.log | grep -a ERROR | grep -a java.lang.AssertionError | cut -d '.' -f 3`
 buggy=`cat _gdart.log | grep -a BUGGY | cut -d '.' -f 2`
+diverged=`cat _gdart.log | grep -a DIVERGED | cut -d '.' -f 2`
 skipped=`cat _gdart.log | grep -a SKIPPED | egrep -v "assumption violation" | cut -d '.' -f 3`
 
 echo "complete: $complete"
 echo "err: $errors"
 echo "buggy: $buggy"
+echo "diverged: $diverged"
 echo "skipped: $skipped"
 
 if [[ -n "$errors" ]]; then
@@ -100,12 +116,12 @@ if [[ -n "$errors" ]]; then
 fi
 
 
-if [[ -z $buggy ]] && [[ -z $skipped ]] && [[ ! -z $complete ]]; then
-  if [[ "$err" -eq "0" ]]; then
-    echo "== OK"
-  else
+if [[ ! "$err" -eq "0" ]]; then
     echo "== ERROR"
-  fi
 else
-  echo "== DONT-KNOW"
+    if [[ -z $buggy ]] && [[ -z $skipped ]] && [[ ! -z $complete ]] && [[ -z $diverged ]]; then
+        echo "== OK"
+    else
+        echo "== DONT-KNOW"
+    fi
 fi
