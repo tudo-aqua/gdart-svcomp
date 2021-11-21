@@ -62,6 +62,11 @@ else
 fi
 echo "compiling: $JAVAC -cp $classpath $mainclass"
 $JAVAC -cp $classpath $mainclass
+if [[ $? -ne 0 ]]; then
+  echo "Could not compile main class"
+  echo "== DONT-KNOW"
+  exit 1
+fi
 
 echo "invoke DSE: $JAVA -cp $OFFSET/dse/target/dse-0.0.1-SNAPSHOT-jar-with-dependencies.jar tools.aqua.dse.DSELauncher $SOLVER_FLAGS -Ddse.executor=$OFFSET/executor.sh -Ddse.executor.args=\"-cp $classpath Main\""
 $JAVA -cp $OFFSET/dse/target/dse-0.0.1-SNAPSHOT-jar-with-dependencies.jar tools.aqua.dse.DSELauncher $SOLVER_FLAGS -Ddse.executor=$OFFSET/executor.sh -Ddse.executor.args="-cp $classpath Main" -Ddse.sources=$classpath > _gdart.log 2> _gdart.err
