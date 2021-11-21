@@ -60,6 +60,14 @@ else
     JAVAC=$OFFSET/SPouT/sdk/mxbuild/linux-amd64/GRAALVM_ESPRESSO_NATIVE_CE_JAVA11/graalvm-espresso-native-ce-java11-21.2.0/bin/javac
     JAVA=$OFFSET/SPouT/sdk/mxbuild/linux-amd64/GRAALVM_ESPRESSO_NATIVE_CE_JAVA11/graalvm-espresso-native-ce-java11-21.2.0/bin/java
 fi
+
+echo "Env. Info ---------------------------------------------"
+mpath=$(dirname $mainclass)
+$JAVA -version
+$JAVAC -version
+ls -lah $mpath
+echo "-------------------------------------------------------"
+
 echo "compiling: $JAVAC -cp $classpath $mainclass"
 $JAVAC -cp $classpath $mainclass
 if [[ $? -ne 0 ]]; then
