@@ -34,6 +34,7 @@ classpath=$OFFSET
 
 mainclass=""
 for folder in $@; do
+    chmod -R 755 $folder/*
     classpath="$classpath:$folder"
     if [[ -n $(find $folder |grep Main.java) ]]; then
       mainclass=$(find $folder |grep Main.java)
