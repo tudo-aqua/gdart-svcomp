@@ -30,22 +30,24 @@ fi
 path=`pwd`
 
 shift
-classpath=$OFFSET
+# classpath=$OFFSET
+classpath=`mktemp -d`
 
 mainclass=""
 for folder in $@; do
-    chmod -R 755 $folder/*
-    classpath="$classpath:$folder"
-    if [[ -n $(find $folder |grep Main.java) ]]; then
-      mainclass=$(find $folder |grep Main.java)
-    fi
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-        find $folder -name *.java -exec sed -i "" -e "s/org\.sosy_lab\.sv_benchmarks\.Verifier/tools\.aqua\.concolic\.Verifier/g" {} \;;
-    else
-        find $folder -name *.java -exec sed -i "s/org\.sosy_lab\.sv_benchmarks\.Verifier/tools\.aqua\.concolic\.Verifier/g" {} \;;
-    fi
-
+  cp -a $folder/* $classpath/
 done
+cp -a $OFFSET/tools $classpath/
+
+if [[ -n $(find $classpath |grep Main.java) ]]; then
+  mainclass=$(find $classpath |grep Main.java)
+fi
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  find $classpath -name *.java -exec sed -i "" -e "s/org\.sosy_lab\.sv_benchmarks\.Verifier/tools\.aqua\.concolic\.Verifier/g" {} \;;
+else
+  find $classpath -name *.java -exec sed -i "s/org\.sosy_lab\.sv_benchmarks\.Verifier/tools\.aqua\.concolic\.Verifier/g" {} \;;
+fi
+
 if [[ -z $mainclass ]]; then
   echo "Could not find main class to execute program"
   echo "== DONT-KNOW"
@@ -80,18 +82,18 @@ fi
 echo "invoke DSE: $JAVA -cp $OFFSET/dse/target/dse-0.0.1-SNAPSHOT-jar-with-dependencies.jar tools.aqua.dse.DSELauncher $SOLVER_FLAGS -Ddse.executor=$OFFSET/executor.sh -Ddse.executor.args=\"-cp $classpath Main\""
 $JAVA -cp $OFFSET/dse/target/dse-0.0.1-SNAPSHOT-jar-with-dependencies.jar tools.aqua.dse.DSELauncher $SOLVER_FLAGS -Ddse.executor=$OFFSET/executor.sh -Ddse.executor.args="-cp $classpath Main" -Ddse.sources=$classpath > _gdart.log 2> _gdart.err
 
-for folder in $@; do
-    classpath="$classpath:$folder"
-    if [[ -n $(find $folder |grep Main.java) ]]; then
-      mainclass=$(find $folder |grep Main.java)
-    fi
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-        find $folder -name *.java -exec sed -i "" -e "s/tools\.aqua\.concolic\.Verifier/org\.sosy_lab\.sv_benchmarks\.Verifier/g" {} \;;
-    else
-        find $folder -name *.java -exec sed -i "s/tools\.aqua\.concolic\.Verifier/org\.sosy_lab\.sv_benchmarks\.Verifier/g" {} \;;
-    fi
-
-done
+#for folder in $@; do
+#    classpath="$classpath:$folder"
+#    if [[ -n $(find $folder |grep Main.java) ]]; then
+#      mainclass=$(find $folder |grep Main.java)
+#    fi
+#    if [[ "$OSTYPE" == "darwin"* ]]; then
+#        find $folder -name *.java -exec sed -i "" -e "s/tools\.aqua\.concolic\.Verifier/org\.sosy_lab\.sv_benchmarks\.Verifier/g" {} \;;
+#    else
+#        find $folder -name *.java -exec sed -i "s/tools\.aqua\.concolic\.Verifier/org\.sosy_lab\.sv_benchmarks\.Verifier/g" {} \;;
+#    fi
+#
+#done
 
 #Eventually, we print non readable character from the SMT solver to the log.
 sed 's/[^[:print:]]//' _gdart.log > _gdart.processed
