@@ -37,7 +37,7 @@ mainclass=""
 for folder in $@; do
   cp -a $folder/* $classpath/
 done
-cp -a $OFFSET/tools $classpath/
+cp -a $OFFSET/verifier-stub/target/verifier-stub-1.0.jar $classpath/
 
 if [[ -n $(find $classpath |grep Main.java) ]]; then
   mainclass=$(find $classpath |grep Main.java)
@@ -53,6 +53,7 @@ if [[ -z $mainclass ]]; then
   echo "== DONT-KNOW"
   exit 1
 fi
+classpath="$classpath:$classpath/verifier-stub-1.0.jar"
 echo "computed classpath: $classpath"
 echo "found main class: $mainclass"
 
