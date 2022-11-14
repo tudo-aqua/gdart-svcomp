@@ -13,7 +13,7 @@
 # specific language governing permissions and limitations under the License.
 
 OFFSET=$(dirname $BASH_SOURCE[0])
-SOLVER_FLAGS="-Ddse.witness=true -Ddse.dp=multi -Ddse.bounds=true -Ddse.bounds.iter=6 -Ddse.bounds.step=6 -Ddse.terminate.on=assertion -Ddse.eplore=BFS -Ddse.b64encode=true -Djconstraints.multi=disableUnsatCoreChecking=true"
+SOLVER_FLAGS="-Ddse.witness=true -Ddse.dp=cvc5 -Ddse.bounds=true -Ddse.bounds.iter=6 -Ddse.bounds.step=6 -Ddse.eplore=BFS -Ddse.b64encode=true -Djconstraints.multi=disableUnsatCoreChecking=true -Dtaint.flow=OFF"
 if [[ -z "$OFFSET" ]]; then
     OFFSET="."
 fi
@@ -25,6 +25,24 @@ property=$1
 if [ "$property" == "-v" ]; then
   echo "gdart-0.1-$sha"
   exit
+fi
+
+ASSERTION=$(cat $property | grep assert)
+EXCEPTION=$(cat $property | grep RuntimeException)
+
+if [[ -z $ASSERTION ]] && [[ -z $EXCEPTION ]]; then
+    echo "Unknown property, cannot analyze this!"
+    exit 127
+fi
+
+if [[ ! -z $ASSERTION ]]; then
+      echo "Adding assumption flag"
+    SOLVER_FLAGS+=" -Ddse.terminate.on=assertion"
+fi
+
+if [[ ! -z $EXCEPTION ]]; then
+    echo "Adding error flag"
+    SOLVER_FLAGS+=" -Ddse.terminate.on=error"
 fi
 
 path=`pwd`
@@ -42,10 +60,11 @@ cp -a $OFFSET/verifier-stub/target/verifier-stub-1.0.jar $classpath/
 if [[ -n $(find $classpath |grep Main.java) ]]; then
   mainclass=$(find $classpath |grep Main.java)
 fi
+echo $classpath
 if [[ "$OSTYPE" == "darwin"* ]]; then
-  find $classpath -name *.java -exec sed -i "" -e "s/org\.sosy_lab\.sv_benchmarks\.Verifier/tools\.aqua\.concolic\.Verifier/g" {} \;;
+  find $classpath -name "*.java" -exec sed -i "" -e "s/org\.sosy_lab\.sv_benchmarks\.Verifier/tools\.aqua\.concolic\.Verifier/g" {} \;;
 else
-  find $classpath -name *.java -exec sed -i "s/org\.sosy_lab\.sv_benchmarks\.Verifier/tools\.aqua\.concolic\.Verifier/g" {} \;;
+  find $classpath -name "*.java" -exec sed -i "s/org\.sosy_lab\.sv_benchmarks\.Verifier/tools\.aqua\.concolic\.Verifier/g" {} \;;
 fi
 
 if [[ -z $mainclass ]]; then
@@ -58,11 +77,16 @@ echo "computed classpath: $classpath"
 echo "found main class: $mainclass"
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
-    JAVAC=$OFFSET/SPouT/sdk/mxbuild/darwin-amd64/GRAALVM_ESPRESSO_NATIVE_CE_JAVA11/graalvm-espresso-native-ce-java11-21.2.0/Contents/Home/bin/javac
-    JAVA=$OFFSET/SPouT/sdk/mxbuild/darwin-amd64/GRAALVM_ESPRESSO_NATIVE_CE_JAVA11/graalvm-espresso-native-ce-java11-21.2.0/Contents/Home/bin/java
+    JAVAC=$OFFSET/SPouT/sdk/mxbuild/darwin-aarch64/GRAALVM_ESPRESSO_NATIVE_CE_JAVA17/graalvm-espresso-native-ce-java17-22.2.0.1-dev/Contents/Home/bin/javac
+    JAVA=$OFFSET/SPouT/sdk/mxbuild/darwin-aarch64/GRAALVM_ESPRESSO_NATIVE_CE_JAVA17/graalvm-espresso-native-ce-java17-22.2.0.1-dev/Contents/Home/bin/java
 else
-    JAVAC=$OFFSET/SPouT/sdk/mxbuild/linux-amd64/GRAALVM_ESPRESSO_NATIVE_CE_JAVA11/graalvm-espresso-native-ce-java11-21.2.0/bin/javac
-    JAVA=$OFFSET/SPouT/sdk/mxbuild/linux-amd64/GRAALVM_ESPRESSO_NATIVE_CE_JAVA11/graalvm-espresso-native-ce-java11-21.2.0/bin/java
+    if [[ "$(uname -m)" == "aarch64" ]]; then
+        JAVAC=$OFFSET/SPouT/sdk/mxbuild/linux-aarch64/GRAALVM_ESPRESSO_NATIVE_CE_JAVA17/graalvm-espresso-native-ce-java17-22.2.0.1-dev/bin/javac
+        JAVA=$OFFSET/SPouT/sdk/mxbuild/linux-aarch64/GRAALVM_ESPRESSO_NATIVE_CE_JAVA17/graalvm-espresso-native-ce-java17-22.2.0.1-dev/bin/java
+    else 
+        JAVAC=$OFFSET/SPouT/sdk/mxbuild/linux-amd64/GRAALVM_ESPRESSO_NATIVE_CE_JAVA17/graalvm-espresso-native-ce-java17-22.2.0.1-dev/bin/javac
+        JAVA=$OFFSET/SPouT/sdk/mxbuild/linux-amd64/GRAALVM_ESPRESSO_NATIVE_CE_JAVA17/graalvm-espresso-native-ce-java17-22.2.0.1-dev/bin/java
+    fi
 fi
 
 echo "Env. Info ---------------------------------------------"
@@ -80,21 +104,8 @@ if [[ $? -ne 0 ]]; then
   exit 1
 fi
 
-echo "invoke DSE: $JAVA -cp $OFFSET/dse/target/dse-0.0.1-SNAPSHOT-jar-with-dependencies.jar tools.aqua.dse.DSELauncher $SOLVER_FLAGS -Ddse.executor=$OFFSET/executor.sh -Ddse.executor.args=\"-cp $classpath Main\""
+echo "invoke DSE: $JAVA -cp $OFFSET/dse/target/dse-0.0.1-SNAPSHOT-jar-with-dependencies.jar tools.aqua.dse.DSELauncher $SOLVER_FLAGS -Ddse.executor=$OFFSET/executor.sh -Ddse.executor.args=\"-cp $classpath Main\" -Ddse.sources=$classpath"
 $JAVA -cp $OFFSET/dse/target/dse-0.0.1-SNAPSHOT-jar-with-dependencies.jar tools.aqua.dse.DSELauncher $SOLVER_FLAGS -Ddse.executor=$OFFSET/executor.sh -Ddse.executor.args="-cp $classpath Main" -Ddse.sources=$classpath > _gdart.log 2> _gdart.err
-
-#for folder in $@; do
-#    classpath="$classpath:$folder"
-#    if [[ -n $(find $folder |grep Main.java) ]]; then
-#      mainclass=$(find $folder |grep Main.java)
-#    fi
-#    if [[ "$OSTYPE" == "darwin"* ]]; then
-#        find $folder -name *.java -exec sed -i "" -e "s/tools\.aqua\.concolic\.Verifier/org\.sosy_lab\.sv_benchmarks\.Verifier/g" {} \;;
-#    else
-#        find $folder -name *.java -exec sed -i "s/tools\.aqua\.concolic\.Verifier/org\.sosy_lab\.sv_benchmarks\.Verifier/g" {} \;;
-#    fi
-#
-#done
 
 #Eventually, we print non readable character from the SMT solver to the log.
 sed 's/[^[:print:]]//' _gdart.log > _gdart.processed
@@ -115,7 +126,15 @@ cat witness.graphml
 echo "# # # # # # #"
 
 complete=`cat _gdart.log | grep -a "END OF OUTPUT"`
+
+if [[ ! -z $ASSERTION ]]; then 
 errors=`cat _gdart.log | grep -a ERROR | grep -a java.lang.AssertionError | cut -d '.' -f 3`
+fi
+
+if [[ ! -z $EXCEPTION ]]; then 
+errors=`cat _gdart.log | grep -a ERROR | grep -a Exception | cut -d '.' -f 3`
+fi
+
 buggy=`cat _gdart.log | grep -a BUGGY | cut -d '.' -f 2`
 diverged=`cat _gdart.log | grep -a DIVERGED | cut -d '.' -f 2`
 skipped=`cat _gdart.log | grep -a SKIPPED | egrep -v "assumption violation" | cut -d '.' -f 3`
@@ -142,3 +161,4 @@ else
         echo "== DONT-KNOW"
     fi
 fi
+rm -rf $classpath #Delete the tmpdir
