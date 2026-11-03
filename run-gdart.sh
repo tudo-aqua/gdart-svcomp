@@ -155,7 +155,8 @@ if [[ $SV_COMP_MODE == 0 ]]; then
     echo "# # # # # # #"
 fi
 
-complete=`cat _gdart.log | grep -a "END OF OUTPUT"`
+# the exploration of the program ended (the constructor summaries print an [END OF OUTPUT] of their own)
+complete=`cat _gdart.log | grep -a "event=end"`
 
 if [[ ! -z $ASSERTION ]]; then 
 errors=`cat _gdart.log | grep -a ERROR | grep -a java.lang.AssertionError | cut -d '.' -f 3`
@@ -169,7 +170,7 @@ buggy=`cat _gdart.log | grep -a BUGGY | cut -d '.' -f 2`
 # paths that were not explored completely or not decided: never OK
 # (precision loss of SPouT is reported as [INCOMPLETE] and gives leaves with "complete path:false")
 # (aborts after a violated Verifier.assume are not explored further on purpose)
-incomplete=`cat _gdart.log | grep -a "complete path:false\|DONT_KNOW\|+ OPEN\|dse.timeout reached" | grep -av "assumption violation"`
+incomplete=`cat _gdart.log | grep -a "complete path:false\|DONT_KNOW\|+ OPEN\|dse.timeout reached\|no trace obtained" | grep -av "assumption violation"`
 diverged=`cat _gdart.log | grep -a DIVERGED | cut -d '.' -f 2`
 # aborted paths (SKIPPED[...] with a reason) other than assumption violations; plain SKIPPED leaves are the
 # unsatisfiable branches of assumptions (e.g. the length of symbolic strings is below 2^31)
