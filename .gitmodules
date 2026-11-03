@@ -1,9 +1,15 @@
 [submodule "dse"]
 	path = dse
 	url = https://github.com/tudo-aqua/dse.git
+	branch = strings
 [submodule "spout"]
 	path = SPouT
 	url = https://github.com/tudo-aqua/spout.git
+	branch = strings
 [submodule "verifier-stub"]
 	path = verifier-stub
 	url = https://github.com/tudo-aqua/verifier-stub.git
+[submodule "jconstraints"]
+	path = jconstraints
+	url = https://github.com/tudo-aqua/jconstraints.git
+	branch = strings
