@@ -29,6 +29,7 @@ OFFSET=$(dirname $BASH_SOURCE[0])
 # - the analysis of the errors of constructors (OPAL, follows calls into the JDK) stops after GDART_ERRORS_BUDGET
 #   seconds (default 60) and approximates the rest by declared exceptions
 # - GDART_OPAL_THREADS: number of threads of OPAL (default: OPAL's choice); GDART_DSE_JVM_OPTS: options of DSE's JVM
+#   (default -Xmx9g -Xss1g)
 SOLVER_FLAGS="-Ddse.witness=true -Ddse.dp=z3 -Ddse.dp.incremental=false -Ddse.dp.timeout=10 -Ddse.explore=BFS -Ddse.summaries.mode=incremental -Ddse.timeout=${GDART_TIMEOUT:-600} -Ddse.b64encode=true -Djconstraints.multi=disableUnsatCoreChecking=true -Dtaint.flow=OFF -Ddse.errors.timeBudget=${GDART_ERRORS_BUDGET:-60}"
 if [[ -z "$OFFSET" ]]; then
     OFFSET="."
@@ -101,15 +102,20 @@ echo "computed classpath: $classpath"
 echo "found main class: $mainclass"
 
 # SPouT (Espresso native standalone, JDK 25) runs the program (executor.sh); its java runs Espresso only.
-# DSE and javac run on a regular JDK (17) in $OFFSET/jdk (a JDK home or a macOS bundle).
-JDK_HOME=$OFFSET/jdk
+# DSE and javac run on a regular JDK (17 or later): the one in $OFFSET/jdk (a JDK home or a macOS bundle) if there
+# is one, otherwise java and javac from the PATH.
 if [[ -x $OFFSET/jdk/Contents/Home/bin/java ]]; then
-    JDK_HOME=$OFFSET/jdk/Contents/Home  # a macOS JDK bundle
+    JAVA=$OFFSET/jdk/Contents/Home/bin/java  # a macOS JDK bundle
+    JAVAC=$OFFSET/jdk/Contents/Home/bin/javac
+elif [[ -x $OFFSET/jdk/bin/java ]]; then
+    JAVA=$OFFSET/jdk/bin/java
+    JAVAC=$OFFSET/jdk/bin/javac
+else
+    JAVA=java
+    JAVAC=javac
 fi
-JAVA=$JDK_HOME/bin/java
-JAVAC=$JDK_HOME/bin/javac
 
-DSE_JVM_OPTS="${GDART_DSE_JVM_OPTS:-}"
+DSE_JVM_OPTS="${GDART_DSE_JVM_OPTS:--Xmx9g -Xss1g}"
 if [[ -n "${GDART_OPAL_THREADS:-}" ]]; then
     DSE_JVM_OPTS+=" -Dorg.opalj.threads.CPUBoundTasks=$GDART_OPAL_THREADS -Dorg.opalj.threads.IOBoundTasks=$GDART_OPAL_THREADS"
 fi
