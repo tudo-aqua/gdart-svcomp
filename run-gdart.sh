@@ -29,7 +29,7 @@ OFFSET=$(dirname $BASH_SOURCE[0])
 # - the analysis of the errors of constructors (OPAL, follows calls into the JDK) stops after GDART_ERRORS_BUDGET
 #   seconds (default 60) and approximates the rest by declared exceptions
 # - GDART_OPAL_THREADS: number of threads of OPAL (default: OPAL's choice); GDART_DSE_JVM_OPTS: options of DSE's JVM
-#   (default -Xmx9g -Xss1g)
+#   (default -Xmx4g -Xss1g: SPouT runs with -Xmx9g, together below the 15 GB of SV-COMP)
 SOLVER_FLAGS="-Ddse.witness=true -Ddse.dp=z3 -Ddse.dp.incremental=false -Ddse.dp.timeout=10 -Ddse.explore=BFS -Ddse.summaries.mode=incremental -Ddse.timeout=${GDART_TIMEOUT:-600} -Ddse.b64encode=true -Djconstraints.multi=disableUnsatCoreChecking=true -Dtaint.flow=OFF -Ddse.errors.timeBudget=${GDART_ERRORS_BUDGET:-60}"
 if [[ -z "$OFFSET" ]]; then
     OFFSET="."
@@ -115,7 +115,7 @@ else
     JAVAC=javac
 fi
 
-DSE_JVM_OPTS="${GDART_DSE_JVM_OPTS:--Xmx9g -Xss1g}"
+DSE_JVM_OPTS="${GDART_DSE_JVM_OPTS:--Xmx4g -Xss1g}"
 if [[ -n "${GDART_OPAL_THREADS:-}" ]]; then
     DSE_JVM_OPTS+=" -Dorg.opalj.threads.CPUBoundTasks=$GDART_OPAL_THREADS -Dorg.opalj.threads.IOBoundTasks=$GDART_OPAL_THREADS"
 fi
