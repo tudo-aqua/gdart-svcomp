@@ -20,7 +20,7 @@ cd gdart-svcomp
 ```
 
 Requirements: git, python3, a C toolchain (Xcode command line tools / `build-essential`, zlib), cmake,
-Maven >= 3.9, JDK 17 (found automatically or set `JDK17_HOME`), network access (GitHub, JitPack, Maven Central),
+Maven >= 3.9, JDK 21 or later (found automatically or set `JDK21_HOME`; jConstraints is compiled for Java 21), network access (GitHub, JitPack, Maven Central),
 about 15 GB of disk and 16 GB of RAM.
 
 `compile-all.sh` (restartable, logs in `build-logs/`):
@@ -30,7 +30,7 @@ about 15 GB of disk and 16 GB of RAM.
 3. builds SPouT, the native standalone of Espresso with the concolic analyses
    (`SPouT/espresso/mxbuild/<platform>/ESPRESSO_NATIVE_STANDALONE`, 20-60 min),
 4. copies `java.base.jmod` of the labsjdk into DSE (OPAL analyzes the JDK classes that SPouT runs) and builds DSE,
-5. links the JDK 17 to `jdk` (DSE and `javac` run on it) and writes `version.txt`.
+5. links the JDK to `jdk` (DSE and `javac` run on it) and writes `version.txt`.
 
 ## Layout of the tool directory
 
@@ -39,7 +39,7 @@ run-gdart.sh, executor.sh, version.txt
 SPouT/espresso/mxbuild/<platform>/ESPRESSO_NATIVE_STANDALONE   (executor.sh: bin/java runs the program)
 dse/target/dse-0.0.1-SNAPSHOT-jar-with-dependencies.jar
 verifier-stub/target/verifier-stub-1.0.jar
-jdk                                                            (JDK 17: DSE and javac)
+jdk                                                            (JDK 21: DSE and javac)
 ```
 
 For the SV-COMP archive, copy these files (`cp -rL` for `jdk`); the sources are not needed.

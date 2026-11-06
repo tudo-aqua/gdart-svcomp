@@ -102,7 +102,7 @@ echo "computed classpath: $classpath"
 echo "found main class: $mainclass"
 
 # SPouT (Espresso native standalone, JDK 25) runs the program (executor.sh); its java runs Espresso only.
-# DSE and javac run on a regular JDK (17 or later): the one in $OFFSET/jdk (a JDK home or a macOS bundle) if there
+# DSE and javac run on a regular JDK (21 or later): the one in $OFFSET/jdk (a JDK home or a macOS bundle) if there
 # is one, otherwise java and javac from the PATH.
 if [[ -x $OFFSET/jdk/Contents/Home/bin/java ]]; then
     JAVA=$OFFSET/jdk/Contents/Home/bin/java  # a macOS JDK bundle
@@ -169,7 +169,8 @@ errors=`cat _gdart.log | grep -a ERROR | grep -a java.lang.AssertionError | cut 
 fi
 
 if [[ ! -z $EXCEPTION ]]; then 
-errors=`cat _gdart.log | grep -a ERROR | grep -a Exception | cut -d '.' -f 3`
+# uncaught RuntimeExceptions (reported by SPouT; assertion violations, other errors and checked exceptions do not count)
+errors=`cat _gdart.log | grep -a "terminating DSE after uncaught runtime exception" | awk '{print $NF}'`
 fi
 
 buggy=`cat _gdart.log | grep -a BUGGY | cut -d '.' -f 2`
